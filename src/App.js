@@ -1,4 +1,5 @@
 import React from 'react';
+import { BrowserRouter, Route, Switch } from "react-router-dom";
 import { createStore, applyMiddleware, combineReducers } from 'redux';
 import { Provider } from 'react-redux';
 import ReduxThunk from 'redux-thunk';
@@ -19,7 +20,11 @@ function App() {
   return (
     <div className="App">
       <Provider store={store}>
-        <ReminderApp />
+        <BrowserRouter>
+          <Switch>
+            <Route path="/" component={ReminderApp} />
+          </Switch>
+        </BrowserRouter>
       </Provider>
     </div>
   );

@@ -1,0 +1,32 @@
+.App {
+  width: 100vw;
+  height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+}
+
+.submit-btn {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 8px;
+}
+
+.api-calls-container {
+  width: 496px;
+  max-height: 108px;
+  overflow: auto;
+}
+
+.api-call {
+  display: flex;
+  justify-content: space-between;
+}
+
+.info-message {
+  width: 496px;
+  display: flex;
+  justify-content: center;
+}

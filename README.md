@@ -1,8 +1,8 @@
-Clone repository in a directory <br />
+Clone [Reminder Front-end](https://github.com/shubhammxv/reminder-app-front) repository in a directory <br />
 And then go to that directory <br />
 Run <b>npm install</b> <br />
 Run <b>npm start</b> to start the project <br />
-Starts server on [localhost:3000](https://localhost:3000/) <br />
+Starts project on [localhost:3000](https://localhost:3000/) <br />
 This project is acting as Client (UI) side 
 for the project [Reminder Back-end](https://github.com/shubhammxv/reminder-app-back) <br />
 <br />

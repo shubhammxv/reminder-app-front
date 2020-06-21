@@ -17,7 +17,7 @@ API_KEY = [YOUR_API_KEY] <br />
 
 DUMMY_EMAIL = [EMAIL_ID_TO_SENT_MAIL_FROM] <br />
 DUMMY_EMAIL_PASSWORD = [DUMMY_EMAIL_PASSWORD] <br />
-To allow sending email from this account Turn on allow less secure apps here[https://myaccount.google.com/lesssecureapps]
+To allow sending email from this account Turn on allow less secure apps [here](https://myaccount.google.com/lesssecureapps)
 
 PORT = 8080 <br />
 Run <b>npm install</b> <br />

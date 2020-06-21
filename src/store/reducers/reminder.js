@@ -3,6 +3,7 @@ import {
   POST_EMAIL_TIME,
   PUT_API_CALL,
   SET_EMAIL_DATA,
+  SET_INFO_MESSAGE,
 } from '../actions/reminder';
 
 const initialState = {
@@ -17,6 +18,11 @@ const initialState = {
     destination: ''
   },
   apiCalls: [],
+  infoData: {
+    info: 'info',
+    message: "It's time to leave!",
+    icon: 'taxi'
+  },
 }
 
 export default (state=initialState, action) => {
@@ -28,8 +34,11 @@ export default (state=initialState, action) => {
       return { ...state, emailData: action.data };
 
     case PUT_API_CALL:
-      console.log("Reducer", action)
       return { ...state, apiCalls: [ ...state.apiCalls, action.data ]};
+
+    case SET_INFO_MESSAGE:
+      console.log("Action Data", action.data);
+      return { ...state, infoData: action.data };
 
     default:
       return state;

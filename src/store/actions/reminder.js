@@ -1,31 +1,68 @@
-import { ENV } from '../../env.js';
+const DOMAIN = 'http://localhost:8080/remind';
 
 export const FETCH_TRAVEL_TIME = "FETCH_TRAVEL_TIME";
 export const POST_EMAIL_TIME = "POST_EMAIL_TIME";
 export const PUT_API_CALL = "PUT_API_CALL";
 export const SET_EMAIL_DATA = "SET_EMAIL_DATA";
+export const SET_INFO_MESSAGE = "SET_INFO_MESSAGE";
 
-export const fetchTravelTime = (origin, dest) => {
+export const getServerStatus = () => {
   return async dispatch => {
-    const url =
-      `${ENV.MATRIX_API}&origins=${origin}&destinations=${dest}&key=${ENV.APIKEY}`;
-
+    const url = `${DOMAIN}/status`;
     try {
+      dispatch(putApiCall(
+        url,
+        new Date(),
+        'Requested Local Server Status'
+      ))
+      const response = await fetch(url);
+      if (!response.status === 200) {
+        throw new Error('Something went wrong');
+      }
+      const resData = await response.json();
+
+    } catch (err) {
+      console.log("Error getting status", err);
+      throw err;
+    }
+  }
+}
+
+export const putApiCall = (api, time, message) => {
+  return dispatch => {
+    dispatch({
+      type: PUT_API_CALL,
+      data: {
+        message: message,
+        api: api,
+        callTime: time
+      }
+    })
+  }
+}
+
+export const fetchTravelTime = (origin, destination) => {
+  return async dispatch => {
+    const url =  `${DOMAIN}/getDuration?origin=${origin}&destination=${destination}`;
+    try {
+      dispatch(putApiCall(
+        url,
+        new Date(),
+        'Requested Matrix API for duration to reach destination'
+      ))
       const response  = await fetch(url);
-      dispatch(putApiCall(url, new Date(), 'GET'));
-      console.log("Status", response.status);
+
       if (!response.status === 200) {
         throw new Error('Something went wrong!');
       }
 
       const resData = await response.json();
-      console.log(" JSON", resData);
       dispatch({
         type: FETCH_TRAVEL_TIME,
         data: resData
       })
     } catch (err) {
-      console.log("Error in Fetch", err);
+      console.log("Error in fetching duration", err);
       throw err;
     }
   }
@@ -33,8 +70,13 @@ export const fetchTravelTime = (origin, dest) => {
 
 export const postEmailTime = (time, email, data) => {
   return async dispatch => {
-    const url = `${ENV.SERVER_HOST}remind/setReminder`;
+    const url = `${DOMAIN}/setReminder`;
     try {
+      dispatch(putApiCall(
+        url,
+        new Date(),
+        'Posting data to set reminder through Email'
+      ))
       const { destination_addresses, origin_addresses } = data;
       const response = await fetch(
         url,
@@ -46,12 +88,12 @@ export const postEmailTime = (time, email, data) => {
           body: JSON.stringify({
             remindAt: time + 330 * 60 * 1000,
             email: email,
-            origin: origin_addresses,
-            destination: destination_addresses,
+            origin: origin_addresses[0],
+            destination: destination_addresses[0],
           })
         }
       )
-      if (!response.ok) {
+      if (!response.status === 200) {
         throw new Error('Something went wrong');
       }
       const resData = await response.json();
@@ -65,19 +107,6 @@ export const postEmailTime = (time, email, data) => {
   }
 }
 
-export const putApiCall = (api, time, method) => {
-  return dispatch => {
-    dispatch({
-      type: PUT_API_CALL,
-      data: {
-        method: method,
-        api: api,
-        callTime: time
-      }
-    })
-  }
-}
-
 export const setEmailData = (time, data) => {
   console.log("Setting Email Data", time, data);
   return dispatch => {
@@ -85,8 +114,21 @@ export const setEmailData = (time, data) => {
       type: SET_EMAIL_DATA,
       data: {
         time: time,
-        origin: data.origin_addresses,
-        destination: data.destination_addresses,
+        origin: data.origin_addresses[0],
+        destination: data.destination_addresses[0],
+      }
+    })
+  }
+}
+
+export const setInfoMessage = (info, message, icon) => {
+  return dispatch => {
+    dispatch({
+      type: SET_INFO_MESSAGE,
+      data: {
+        info: info,
+        message: message,
+        icon: icon
       }
     })
   }

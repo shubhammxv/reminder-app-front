@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { Header, Icon } from 'semantic-ui-react';
+import { Message, Icon } from 'semantic-ui-react';
 import { connect } from 'react-redux';
 
 import '../styles.css'
@@ -7,23 +7,18 @@ import '../styles.css'
 class InfoMessage extends Component {
 
   render() {
-    const { time } = this.props.remind.emailData;
+    const { infoData, emailData } = this.props.remind;
+    const { info, message, icon } = infoData;
     return (
-      <Header
+      <Message
         className="info-message"
-        textAlign='center'
-        block
-      >
-        <Icon
-          name={time ? 'bell outline': 'taxi'}
-        />
-        <Header.Content>
-          { time
-            ? `Reminder through Email set for ${time}!`
-            : "It's time to leave!"
-          }
-        </Header.Content>
-      </Header>
+        icon={icon}
+        info={info === 'info'}
+        error={info === 'error'}
+        warning={info === 'warning'}
+        header={message}
+        style={{ textAlign: 'center' }}
+      />
     )
   }
 }

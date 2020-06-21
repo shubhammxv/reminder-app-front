@@ -26,7 +26,7 @@
 }
 
 .info-message {
-  width: 496px;
+  width: 496px !important;
   display: flex;
   justify-content: center;
 }

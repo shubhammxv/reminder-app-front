@@ -9,7 +9,7 @@ class ApiCalls extends Component {
   renderApiCalls = (apiCalls) => {
     return (
       apiCalls.map(apiCall => {
-        const { callTime, method } = apiCall;
+        const { callTime, message } = apiCall;
         const formatTime = moment(callTime).format('hh:mm:ss A');
         return (
           <div
@@ -20,10 +20,7 @@ class ApiCalls extends Component {
               {'[ ' + formatTime + ' ]'}
             </div>
             <div>
-              {method === 'GET'
-                ? 'Requested Distance matrix API for Duration'
-                : 'Posted Reminder Time for Email'
-              }
+              {message}
             </div>
           </div>
         )

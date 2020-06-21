@@ -4,10 +4,12 @@ import { connect } from 'react-redux';
 import moment from 'moment';
 
 import {
+  getServerStatus,
   fetchTravelTime,
   postEmailTime,
   putApiCall,
   setEmailData,
+  setInfoMessage,
 } from '../store/actions/reminder';
 
 import '../styles.css'
@@ -16,11 +18,11 @@ class ReminderForm extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      srcLat: '',
-      srcLng: '',
-      destLat: '',
-      destLng: '',
-      time: '',
+      srcLat: 12.927880,
+      srcLng: 77.627600,
+      destLat: 13.035542,
+      destLng:  77.597100,
+      time: '8:00 PM',
       email: '',
     }
   }
@@ -42,7 +44,33 @@ class ReminderForm extends Component {
     }
   }
 
-  calculateRemindTime = (reachTime, duration, travelData) => {
+  resetInfoMessage = () => {
+    this.props.setInfoMessage(
+      'info',
+      `It's time to leave!`,
+      'taxi'
+    )
+  }
+
+  resetState = () => {
+    this.setState({
+      srcLat: '',
+      srcLng: '',
+      destLat: '',
+      destLng:  '',
+      time: '',
+      email: '',
+    })
+  }
+
+  calculateRemindTime = async (reachTime) => {
+    const { travelData } = this.props.remind;
+    const { destination_addresses, origin_addresses, rows } = travelData;
+    let duration = 'O Mins';
+    if (rows && rows.length) {
+      duration = rows[0].elements[0].duration.text;
+    }
+
     const formatTime = moment(reachTime, 'hh:mm A').format('H:mm');
     const hrsMins = formatTime.split(':');
     const arrivalTime = new Date(new Date().setHours(hrsMins[0], hrsMins[1], 0));
@@ -53,32 +81,84 @@ class ReminderForm extends Component {
     const leaveTime = new Date(arrivalTime - diffDuration);
     const reminderTime = moment(leaveTime).format("MMM'Do, h:mm A");
 
-    this.props.putApiCall('API Call', new Date(), 'GET');
-    this.props.postEmailTime(
-      leaveTime,
-      this.state.email,
-      travelData
-    );
-    this.props.setEmailData(reminderTime, travelData);
+    if (leaveTime < new Date()) {
+      this.props.setInfoMessage(
+        'warning',
+        `Leaving time has already passed. You needed to leave at ${reminderTime}`,
+        'warning sign'
+      )
+      this.setState({
+        destLat: '',
+        destLng:  '',
+      })
+      setTimeout(this.resetInfoMessage, 3000);
+      return;
+    }
+
+    try {
+      await this.props.postEmailTime(
+        leaveTime,
+        this.state.email,
+        travelData
+      );
+      this.props.setEmailData(reminderTime, travelData);
+      this.props.setInfoMessage(
+        'success',
+        `Email Reminder set for ${reminderTime}`,
+        'info circle'
+      )
+      this.resetState();
+      setTimeout(this.resetInfoMessage, 3000);
+
+    } catch (err) {
+      this.props.setInfoMessage(
+        'error',
+        `Error while Posting Email Reminder`,
+        'warning circle'
+      )
+      console.log("Error while Posting Email Reminder", err);
+      setTimeout(this.resetInfoMessage, 3000);
+      return;
+    }
   }
 
   handleSubmit = async () => {
-    const { srcLat, srcLng, destLat, destLng } = this.state;
+    try {
+      await this.props.getServerStatus();
+    } catch (err) {
+      this.props.setInfoMessage(
+        'error',
+        `Error while getting server status`,
+        'info circle'
+      )
+      console.log("Error while getting server status", err);
+      setTimeout(this.resetInfoMessage, 3000);
+      return;
+    }
+
+    const { srcLat, srcLng, destLat, destLng, time } = this.state;
     const origin = srcLat + ',' + srcLng;
     const destination = destLat + ',' + destLng;
-    await this.props.fetchTravelTime(origin, destination);
-    console.log("Response", this.props.remind);
+    try {
+      await this.props.fetchTravelTime(origin, destination);
+      console.log("Fetched Travel Time", this.props.remind);
+      this.calculateRemindTime(time);
+    } catch (err) {
+      this.props.setInfoMessage(
+        'error',
+        `Error while calling matrix API`,
+        'warning circle'
+      )
+      console.log("Error while calling matrix API", err);
+      setTimeout(this.resetInfoMessage, 3000);
+      return;
+    }
   }
 
   render() {
     const { srcLat, srcLng, destLat, destLng,
       time, email } = this.state;
-    const { travelData } = this.props.remind;
-    const { destination_addresses, origin_addresses, rows } = travelData;
-    let duration = '';
-    if (rows && rows.length) {
-      duration = rows[0].elements[0].duration.text;
-    }
+
     const isDisabled = !(srcLat && srcLng && destLat && destLng && time && email);
     return (
       <Form>
@@ -150,9 +230,7 @@ class ReminderForm extends Component {
               type='submit'
               color='twitter'
               disabled={isDisabled}
-              onClick={() =>
-                this.calculateRemindTime('09:08 PM', duration || '2 Mins', travelData)
-              }
+              onClick={this.handleSubmit}
             >Remind Me
             </Button>
           </div>
@@ -167,8 +245,10 @@ const mapStateToProps = ({ remind }) => ({ remind });
 export default connect(
   mapStateToProps,
   {
+    getServerStatus,
     fetchTravelTime,
     setEmailData,
     postEmailTime,
     putApiCall,
+    setInfoMessage,
   })(ReminderForm);

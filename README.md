@@ -17,6 +17,6 @@ For server side code, go [here](https://github.com/shubhammxv/reminder-app-back)
 # install dependencies
 $ npm install
 
-# launch server (localhost:8080)
+# launch server (localhost:3000)
 $ npm start
 ```

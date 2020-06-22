@@ -1,26 +1,22 @@
-Clone [Reminder Front-end](https://github.com/shubhammxv/reminder-app-front) repository in a directory <br />
-And then go to that directory <br />
-Run <b>npm install</b> <br />
-Run <b>npm start</b> to start the project <br />
-Starts project on [localhost:3000](https://localhost:3000/) <br />
-This project is acting as Client (UI) side 
-for the project [Reminder Back-end](https://github.com/shubhammxv/reminder-app-back) <br />
-<br />
-<br />
-Clone this [Reminder Back-end](https://github.com/shubhammxv/reminder-app-back) project in another directory <br />
-And then go to that directory <br />
+# Reminder App (UI)
 
-Create .env in the root folder of this directory <br />
-And enter the following key value pairs <br />
+A simple reminder through Email app to leave in time to your destination (UI part)
+For server side code, go [here](https://github.com/shubhammxv/reminder-app-back)
 
-GOOGLE_MATRIX_API = https://maps.googleapis.com/maps/api/distancematrix/json?units=imperial <br />
-API_KEY = [YOUR_API_KEY] <br />
-DUMMY_EMAIL = [EMAIL_ID_TO_SENT_MAIL_FROM] <br />
-DUMMY_EMAIL_PASSWORD = [DUMMY_EMAIL_PASSWORD] <br />
-PORT = 8080 <br />
+## Technologies used
 
-To allow sending email from this account, Turn on allow less secure apps [here](https://myaccount.google.com/lesssecureapps)
+- React.js
+- React redux
+- JavaScript
+- HTML/CSS
+- NPM
 
-Run <b>npm install</b> <br />
-Run <b>npm start</b> to start the server <br />
-Starts server on [localhost:8080](https://localhost:8080/) <br />
+## Build Setup
+
+``` bash
+# install dependencies
+$ npm install
+
+# launch server
+$ npm start
+```
